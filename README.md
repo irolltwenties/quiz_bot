@@ -1,5 +1,5 @@
 # Study Quiz Bot
- Telegram bot for some tests. 
+This telegram bot aims to make the classroom exam process a little bit easier for a teacher.
 
 <h2>Install</h2>
 Make sure you got Python 3.8 or later version.
