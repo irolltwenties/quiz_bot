@@ -10,16 +10,16 @@ def kb_gen(eggs):
 
 
 teacher_kb = InlineKeyboardMarkup(row_width=2)
-teacher_kb.add(InlineKeyboardButton('СОЗДАТЬ НОВЫЙ ТЕСТ', callback_data='create_test'))
-teacher_kb.add(InlineKeyboardButton('ПОСМОТРЕТЬ МОИ ТЕСТЫ', callback_data='show_tests'))
-teacher_kb.add(InlineKeyboardButton('НАСТРОИТЬ ТЕСТ', callback_data='edit_test'))
-teacher_kb.add(InlineKeyboardButton('ПРОЙТИ ТЕСТ', callback_data='run_test'))
-teacher_kb.add(InlineKeyboardButton('РЕЗУЛЬТАТЫ ТЕСТА', callback_data='show_passed'))
+teacher_kb.add(InlineKeyboardButton('CREATE NEW TEST', callback_data='create_test'))
+teacher_kb.add(InlineKeyboardButton('SEE MY TESTS', callback_data='show_tests'))
+teacher_kb.add(InlineKeyboardButton('DESIGN TEST', callback_data='edit_test'))
+teacher_kb.add(InlineKeyboardButton('START TEST', callback_data='run_test'))
+teacher_kb.add(InlineKeyboardButton('TEST RESULTS', callback_data='show_passed'))
 
 student_kb = InlineKeyboardMarkup(row_width=1)
-student_kb.add(InlineKeyboardButton('ПРОЙТИ ТЕСТ', callback_data='run_test'))
+student_kb.add(InlineKeyboardButton('START TEST', callback_data='run_test'))
 
 test_edit_kb = InlineKeyboardMarkup(row_width=3)
-test_edit_kb.add(InlineKeyboardButton('СОЗДАТЬ ВОПРОС', callback_data='create_quest'))
-test_edit_kb.add(InlineKeyboardButton('ОТКРЫТЬ ТЕСТ', callback_data='open_test'))
-test_edit_kb.add(InlineKeyboardButton('ЗАКРЫТЬ ТЕСТ', callback_data='close_test'))
+test_edit_kb.add(InlineKeyboardButton('CREATE QUESTION', callback_data='create_quest'))
+test_edit_kb.add(InlineKeyboardButton('OPEN TEST', callback_data='open_test'))
+test_edit_kb.add(InlineKeyboardButton('CLOSE TEST', callback_data='close_test'))

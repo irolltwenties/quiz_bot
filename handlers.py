@@ -33,14 +33,14 @@ class Running(StatesGroup):
 
 async def start_command(msg: types.Message):
     await msg.answer(
-        'Привет! Этот бот предназначен для создания и прохождения тестов.\n'
-        'Попробуй использовать команду /help для начала работы.'
+        'Hellow! This bot is designed to make classroom tests a little bit easier.\n'
+        'Try to use /help to start.'
     )
 
 
 async def register_command(msg: types.Message):
     await msg.answer(
-        'Начнем регистрацию. Первым делом, представьтесь.'
+        'Enter your full name.'
     )
     await Registration.ASK_NAME.set()
 
@@ -48,10 +48,10 @@ async def register_command(msg: types.Message):
 async def register_command_2(msg: types.Message, state: FSMContext):
     await state.update_data(name=msg.text)
     await msg.answer(
-        f'Хорошо, {msg.text}. Настало время ввести номер своей группы.'
+        f'Ok, {msg.text}. Enter the number of your group.'
     )
     await msg.answer(
-        'Не забудьте, что вам следует ввести специальный пароль, если вы - преподаватель.'
+        'Dont forget to enter your special teacher password here if you are not a student'
     )
     await Registration.ASK_GROUP.set()
 
@@ -64,27 +64,27 @@ async def register_command_3(msg: types.Message, state: FSMContext):
     else:
         status = 'student'
     await msg.answer(
-        'Уже почти все!')
+        'All data gathered...')
     backend.register(msg.from_user.id, name, msg.text, status)
     if status == 'student':
         await msg.answer(
-            'Регистрация прошла успешно. \n'
-            f'Ваше имя {name}\n'
-            f'Ваша группа имеет номер {msg.text}\n'
-            f'Ваш статус = {status}'
+            'Registration complete. \n'
+            f'Your name is {name}\n'
+            f'Your group number is {msg.text}\n'
+            f'Current status = {status}'
         )
     elif status == 'teacher':
         await msg.answer(
-            'Регистрация прошла успешно. \n'
-            f'Ваше имя {name}\n'
-            f'Ваш статус = {status}'
+            'Registration complete. \n'
+            f'Your name is {name}\n'
+            f'Current status = {status}'
         )
     await state.finish()
 
 
 async def help_command(msg: types.Message):
-    await msg.answer('На данный момент поддерживаются следующие команды:\n'
-                     '/register\n'
+    await msg.answer('Next commands are working at least fine:\n'
+                     '/register must be the first command to run with this bot\n'
                      '/help\n'
                      '/menu')
 
@@ -92,10 +92,10 @@ async def help_command(msg: types.Message):
 async def get_menu(msg: types.Message):
     if backend.check_registration(msg.from_user.id):
         if backend.check_teacher(msg.from_user.id):
-            await msg.answer('Учительское меню',
+            await msg.answer('Teacher options menu',
                              reply_markup=kb.teacher_kb)
         else:
-            await msg.answer('Студенческое меню', reply_markup=kb.student_kb)
+            await msg.answer('Student menu', reply_markup=kb.student_kb)
     else:
         print('Regcheck failed')
         pass
@@ -104,7 +104,7 @@ async def get_menu(msg: types.Message):
 async def show_tests(callback: types.CallbackQuery):
     uid = backend.get_uid(callback.from_user.id)
     await callback.message.answer(
-        'Вот список ваших тестов. Какой из них вас интересует сейчас?',
+        'Here is the list of your tests. Select the one you are interested at.',
         reply_markup=kb.kb_gen(backend.get_test_list(uid))
     )
     await Show.CHOICE.set()
@@ -116,10 +116,10 @@ async def show_test(msg: types.Message, state: FSMContext):
     uid = backend.get_uid(tg_id)
     test_id = backend.get_test_id(test_name, uid)
     info = backend.get_info(test_id)
-    answr = 'Вот список вопросов в этом тесте:\n'
+    answr = 'Here is the list of questions in this test:\n'
     for elem in info:
         answr += f'\n{elem}'
-    answr += f'\n\nУникальный номер вашего теста - {test_id}'
+    answr += f'\n\nUnique number of this test is {test_id}'
     await msg.answer(answr)
     await state.finish()
 
@@ -127,7 +127,7 @@ async def show_test(msg: types.Message, state: FSMContext):
 async def show_passed(callback: types.CallbackQuery):
     uid = backend.get_uid(callback.from_user.id)
     await callback.message.answer(
-        'Вот список ваших тестов. Какой из них вас интересует сейчас?',
+        'Here is the list of your tests. Select the one you are interested at.',
         reply_markup=kb.kb_gen(backend.get_test_list(uid))
     )
     await Show.SHOW.set()
@@ -144,15 +144,15 @@ async def show_passed_2(msg: types.Message, state: FSMContext):
         group = results['groups'][item]
         wrong = results['wrong'][item]
         points = results['points'][item]
-        answer += f'Студент по имени {name} из группы {group} получил {points} очков. {wrong}\n'
+        answer += f'Student {name} from group {group} received {points} points. {wrong}\n'
     await msg.answer(answer)
     await state.finish()
 
 
 async def run_test(callback: types.CallbackQuery):
     await callback.message.answer(
-        'Преподаватель должен был сообщить вам номер открытого теста. \n'
-        'Введите его.'
+        'The teacher told you the number of the test. \n'
+        'Enter it.'
     )
     await Running.CHOICE.set()
 
@@ -165,9 +165,9 @@ async def run_test_2(msg: types.Message, state: FSMContext):
         await state.update_data(result_id=result_id)
         test_name = backend.get_test_name(test_id)
         await msg.answer(
-            'Данный тест открыт для прохождения учителем.\n'
-            f'Тест называется {test_name}. Приготовьтесь.',
-            reply_markup=kb.kb_gen(['Начать тест'])
+            'The test is opened.\n'
+            f'Test {test_name}. Get ready.',
+            reply_markup=kb.kb_gen(['Start test'])
         )
         await state.update_data(test_id=test_id)
         await state.update_data(
@@ -176,7 +176,7 @@ async def run_test_2(msg: types.Message, state: FSMContext):
         await state.update_data(number=0)
         await Running.START_TEST.set()
     else:
-        await msg.answer('Данный тест закрыт для прохождения учителем, или вы его уже проходили.')
+        await msg.answer('The test is closed by the teacher or you had already performed it.')
         await state.finish()
 
 
@@ -188,8 +188,8 @@ async def run_test_3(msg: types.Message, state: FSMContext):
     number_of_questions = data['number_of_questions']
     if number > (number_of_questions - 1) or backend.test_active(test_id) != 1:
         await msg.answer(
-            'ТЕСТ ОКОНЧЕН.'
-            '\nЕсли вы попытаетесь пройти его снова, данные будут испорчены, результат теста составит 0 баллов'
+            'TEST IS FINISHED.'
+            '\nTrying to complete it once more would break your results.'
         )
         await state.finish()
     else:
@@ -211,33 +211,33 @@ async def run_test_4(msg: types.Message, state: FSMContext):
         backend.got_point(result_id)
         await state.update_data(number=number + 1)
         await msg.answer(
-            'Ваш ответ записан', reply_markup=kb.kb_gen(['Дальше']))
+            'Your answer is saved', reply_markup=kb.kb_gen(['Next']))
         await Running.START_TEST.set()
     else:
         backend.got_wrong(result_id, number + 1)
         await state.update_data(number=number + 1)
         await msg.answer(
-            'Ваш ответ записан', reply_markup=kb.kb_gen(['Дальше']))
+            'Your answer is saved', reply_markup=kb.kb_gen(['Next']))
         await Running.START_TEST.set()
 
 
 async def create_test(callback: types.CallbackQuery):
-    await callback.message.answer('Введите название вашего теста.\n'
-                                  'Названия ВАШИХ тестов не должны повторяться!')
+    await callback.message.answer('Enter the name of your test.\n'
+                                  'All your tests names must be different!')
     await Creation.ASK_TEST_NAME.set()
 
 
 async def create_test_name(msg: types.Message, state: FSMContext):
     uid = backend.get_uid(msg.from_user.id)
     backend.empty_quiz(msg.text, uid, active=0)
-    await msg.answer('Ваш тест создан. Теперь вы можете его настроить.')
+    await msg.answer('Test is created. Now you can design it.')
     await state.finish()
 
 
 async def edit_test(callback: types.CallbackQuery):
     uid = backend.get_uid(callback.from_user.id)
     await callback.message.answer(
-        'Выберите тест для настройки',
+        'Select the test',
         reply_markup=kb.kb_gen(backend.get_test_list(uid))
     )
     await Editing.CHOICE.set()
@@ -246,7 +246,7 @@ async def edit_test(callback: types.CallbackQuery):
 async def edit_test_choice(msg: types.Message, state: FSMContext):
     await state.update_data(chosen_test=msg.text)
 
-    await msg.reply('Выберите метод настройки теста',
+    await msg.reply('What do you want to do?',
                     reply_markup=kb.test_edit_kb)
 
 
@@ -256,8 +256,8 @@ async def open_test(callback: types.CallbackQuery, state: FSMContext):
     test_name = data['chosen_test']
     test_id = backend.get_test_id(test_name, uid)
     backend.active_test(test_id)
-    await callback.answer('Выбранный вами тест открыт для прохождения.\n'
-                          'Для продолжения работы вернитесь в /menu')
+    await callback.answer('Selected test is opened.\n'
+                          'Come back in /menu')
     await state.finish()
 
 
@@ -267,27 +267,27 @@ async def close_test(callback: types.CallbackQuery, state: FSMContext):
     test_name = data['chosen_test']
     test_id = backend.get_test_id(test_name, uid)
     backend.inactive_test(test_id)
-    await callback.answer('Выбранный вами тест закрыт для прохождения.\n'
-                          'Для продолжения работы вернитесь в /menu')
+    await callback.answer('Selected test is closed.\n'
+                          'Come back in /menu')
     await state.finish()
 
 
 async def create_quest(callback: types.CallbackQuery, state: FSMContext):
-    await callback.message.answer('Введите вопрос.')
+    await callback.message.answer('Enter question.')
     await Editing.ASK_QUEST.set()
 
 
 async def listen_quest(msg: types.Message, state: FSMContext):
     await state.update_data(question=msg.text)
-    await msg.reply('Теперь введите ВЕРНЫЙ ответ на ваш вопрос.')
+    await msg.reply('Enter correct answer to your question.')
     await Editing.ASK_CORRECT.set()
 
 
 async def listen_correct(msg: types.Message, state: FSMContext):
     await state.update_data(correct=msg.text)
     await state.update_data(wrong='')
-    await msg.reply('Теперь, пришло время вводить НЕВЕРНЫЕ ответы.\n'
-                    'Когда вы захотите остановиться, введите команду '
+    await msg.reply('Enter wrong answers in messages one by one.\n'
+                    'When you finished, enter command: '
                     '/stop')
     await Editing.ASK_WRONG.set()
 
@@ -307,7 +307,7 @@ async def listen_wrong(msg: types.Message, state: FSMContext):
         print(test_name)
         test_id = backend.get_test_id(format(test_name), uid)
         backend.save_question(question, correct, wrong, test_id)
-        await msg.answer('Вопрос записан в тест.')
+        await msg.answer('Question is saved.')
         await state.finish()
         await get_menu(msg)
 

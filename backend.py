@@ -382,7 +382,7 @@ def init_result(student_id, test_id):
             'INSERT INTO result '
             '("student_id", "wrong", "point", "test_id") '
             'VALUES (?, ?, ?, ?)', 
-            (student_id, '\nНеверные ответы: \n', 0, test_id)
+            (student_id, '\nNumbers of wrong answers: \n', 0, test_id)
             )
         connection.commit()
         conn.execute(
