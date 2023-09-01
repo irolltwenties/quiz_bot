@@ -58,6 +58,7 @@ First command to bot from new user got to be /register. Insert your teacher pass
 <hr>
 Other commands are:<br>
 /help -- some additional info, may be updated<br>
-/menu -- basic command for work with bot, availiable after using /register<br>
+/menu -- basic command for work with bot, available after using /register<br>
 
+For now, there is no opportunity for one student to pass the same test twice. This feature might be enabled later.
 Have fun!
